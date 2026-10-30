@@ -1,4 +1,5 @@
 # Style Atlas (ComfyUI)
+<img width="3102" height="4944" alt="ComfyUI_0041" src="https://github.com/user-attachments/assets/1d7f1982-3a3e-4c74-9b78-cbf7b5df1b85" />
 
 A ComfyUI node that builds prompts from a spreadsheet of about 1,500 art styles and 200 modifiers. Write your subject, pick a style (or Random), add modifiers if you want, and it outputs one combined prompt.
 
@@ -25,6 +26,7 @@ The library must be in the node folder, named `style_atlas_library.xlsx`.
 To update later, run `git pull` inside the `Style_Atlas` folder. Back up the xlsx first if you've edited it.
 
 ## Inputs
+<img width="756" height="1288" alt="image" src="https://github.com/user-attachments/assets/b473592e-958b-4bff-a79e-74e8e0c7f03e" />
 
 | Input | Purpose |
 |---|---|
