@@ -3,7 +3,6 @@
 ## Install
 1. Copy the `comfyui-style-atlas` folder into `ComfyUI/custom_nodes/`.
 2. Put your library in the folder, named `style_atlas_library.xlsx`
-   (rename `styles_wildcard_v23.xlsx`). Other sheets can stay.
 3. Portable ComfyUI: `python_embeded\python.exe -m pip install openpyxl`
 4. Restart ComfyUI fully, then hard-refresh the browser (Ctrl+F5).
 5. Right-click > Add Node > Style Atlas > Prompt > 🎨 Style Atlas.
