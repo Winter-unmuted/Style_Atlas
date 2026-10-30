@@ -45,6 +45,30 @@ REALISM_MODE = ["Exact", "±1"]
 
 COUNT_RE = re.compile(r"\s*\(\d+\)\s*$")
 
+# Placeholders for the custom template. Substituted in one pass, so text that
+# came from the prompt or the library is never re-scanned for placeholders.
+PLACEHOLDER_RE = re.compile(
+    r"\{(prompt|style|modifiers|style_name|style_short_only|style_long_only)\}")
+
+TEMPLATE_TOOLTIP = (
+    "Used only when style_position = custom template.\n"
+    "\n"
+    "Placeholders:\n"
+    "{prompt} - your prompt text\n"
+    "{style} - the chosen base style's text (Short/Long per 'version'). "
+    "Also includes the modifier text, unless {modifiers} appears in the template.\n"
+    "{modifiers} - text of every active modifier (Quality, Lighting, Palette, etc.). "
+    "Using it moves the modifiers out of {style}.\n"
+    "{style_name} - name of the chosen base style\n"
+    "{style_short_only} - the chosen style's Short Version only (empty if it has none)\n"
+    "{style_long_only} - the chosen style's Long Version only (empty if it has none)\n"
+    "\n"
+    "When style or a modifier is set to 🎲 Random, its placeholders get the "
+    "seeded random pick. include_style_names applies to all style/modifier text.\n"
+    "\n"
+    "New line: type \\n or /n"
+)
+
 
 def clean(value):
     """Remove the ' (123)' count suffix added by the JS for display."""
@@ -219,7 +243,7 @@ class StyleAtlasNode:
                 "custom_template": ("STRING", {
                     "multiline": False,
                     "default": "{prompt}, {style}",
-                    "tooltip": "Used when style_position = custom template. Placeholders: {prompt} {style} {modifiers}",
+                    "tooltip": TEMPLATE_TOOLTIP,
                 }),
             },
         }
@@ -302,11 +326,20 @@ class StyleAtlasNode:
         prompt = (prompt or "").strip()
         if style_position == "custom template":
             tpl = custom_template or "{prompt}, {style}"
-            if "{modifiers}" in tpl:
-                out = tpl.replace("{prompt}", prompt).replace("{style}", " ".join(parts)) \
-                         .replace("{modifiers}", modifiers)
-            else:
-                out = tpl.replace("{prompt}", prompt).replace("{style}", style_text)
+            tpl = tpl.replace("\\n", "\n").replace("/n", "\n")
+
+            def fmt(t):
+                return finish(t if include_style_names else strip_name(t)) if t else ""
+
+            values = {
+                "prompt": prompt,
+                "style": " ".join(parts) if "{modifiers}" in tpl else style_text,
+                "modifiers": modifiers,
+                "style_name": chosen["name"] if chosen else "",
+                "style_short_only": fmt(chosen["short"]) if chosen else "",
+                "style_long_only": fmt(chosen["long"]) if chosen else "",
+            }
+            out = PLACEHOLDER_RE.sub(lambda m: values[m.group(1)], tpl)
         else:
             tpl = POSITIONS.get(clean(style_position), "{prompt}, {style}")
             if not prompt:
@@ -316,7 +349,8 @@ class StyleAtlasNode:
             else:
                 p = prompt.rstrip(" .,") if "{prompt}," in tpl or "{prompt}." in tpl else prompt
                 out = tpl.replace("{prompt}", p).replace("{style}", style_text)
-        out = re.sub(r"[ \t]+", " ", out).replace(" ,", ",").replace("..", ".").strip()
+        out = re.sub(r"[ \t]+", " ", out)
+        out = re.sub(r" *\n *", "\n", out).replace(" ,", ",").replace("..", ".").strip()
         return (out, style_text, "\n".join(info))
 
 
