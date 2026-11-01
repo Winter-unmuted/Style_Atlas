@@ -3,6 +3,8 @@
 
 A ComfyUI node that builds prompts from a spreadsheet of about 1,500 art styles and 200 modifiers. Write your subject, pick a style (or Random), add modifiers if you want, and it outputs one combined prompt.
 
+This started as a fork to be merged with the node pack made by Github/reddit user atlasimp with only some minor improvements, but they went a different direction and I liked the functionality this had, so I'm keeping it as is. 
+
 ## Install (Windows)
 
 1. Install Git from https://git-scm.com/download/win (default options).
@@ -11,7 +13,7 @@ A ComfyUI node that builds prompts from a spreadsheet of about 1,500 art styles 
    - open the folder in File Explorer, type `cmd` in the address bar, and press Enter.
 3. Download the node:
    ```
-   git clone https://github.com/atlasimp/Style_Atlas.git
+   git clone https://github.com/Winter-unmuted/Style_Atlas.git
    ```
 4. Install openpyxl. For portable ComfyUI:
    ```
